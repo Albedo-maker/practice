@@ -125,8 +125,10 @@ int ReadFlightRecord(ifstream& file, FlightRecord& record, bool printLine = fals
     // Заполнение структуры
     record.flightNumber = flightNum;
     int k = 0;
-    while (boardNum[k] != '\0' && k < MAX_BOARD_LEN - 1)
-        record.boardNumber[k] = boardNum[k++];
+    while (boardNum[k] != '\0' && k < MAX_BOARD_LEN - 1) {
+        record.boardNumber[k] = boardNum[k];
+        k++;
+    }
     record.boardNumber[k] = '\0';
     record.passengerCount = passengers;
     record.delayDays = days;
@@ -173,7 +175,8 @@ int LoadFlightData(const char* filename, FlightRecord*& records, int*& indexArra
         lineNumber++;
         if (errorCode == 0) {
             records[idx] = tempRecord;
-            indexArray[idx] = idx++;
+            indexArray[idx] = idx;
+            idx++;
         }
     }
     file2.close();
