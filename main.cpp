@@ -3,13 +3,13 @@
 *                           Летняя Практика                                   *
 *-----------------------------------------------------------------------------*
 * Project Type  : Win32 Console Application                                   *
-* Project Name  : MaiPractice                                                 *
+* Project Name  : Practice                                                    *
 * File Name     : main.cpp                                                    *
 * Language      : C/C++                                                       *
 * Programmer    : Петр Бадрихин                                               *
 * Modified By   :                                                             *
 * Created       : 11/05/26                                                    *
-* Last Revision : 02/06/26                                                    *
+* Last Revision : 03/06/26                                                    *
 * Comment(s)    : Работа со структурами и индексной сортировкой               *
 ******************************************************************************/
 
@@ -19,7 +19,7 @@
 #include <cstdio>     // для sscanf
 #include <cctype>     // для isdigit
 
-using namespace std;  // не хочу писать std:: перед каждым cout
+using namespace std;
 
 // ----- константы -----
 const int MAX_LINE_LEN = 200;   // хватит для любой разумной строки
@@ -47,25 +47,11 @@ struct FlightRecord {
 };
 
 // ----- самодельные функции для работы со строками -----
-// считаем длину строки
-int my_strlen(const char* s) {
-    int len = 0;
-    while (s[len]) ++len;
-    return len;
-}
+int my_strlen(const char* s);
+void my_strcpy(char* dest, const char* src);
+int my_strcmp(const char* a, const char* b);
 
-// копируем строку
-void my_strcpy(char* dest, const char* src) {
-    while ((*dest++ = *src++));
-}
-
-// сравниваем две строки: 0 если равны
-int my_strcmp(const char* a, const char* b) {
-    while (*a && *b && *a == *b) { ++a; ++b; }
-    return *(unsigned char*)a - *(unsigned char*)b;
-}
-
-// ----- прототипы функций -----
+// ----- прототипы остальных функций -----
 void PrintError(int code, const char* filename, int line);
 bool IsValidBoardNumber(const char* board);
 bool IsValidDelayTime(const char* timeStr, int& days, int& hours, int& minutes);
@@ -75,6 +61,54 @@ int LoadFlightData(const char* filename, FlightRecord*& records, int*& indices, 
 void SortByDelayDesc(FlightRecord* records, int* indices, int n);
 void DisplayTable(FlightRecord* records, int* indices, int n);
 int selectTestFile();
+
+// ------------------------------------------------------------------
+//  Главная функция
+// ------------------------------------------------------------------
+int main() {
+    cout << "========================================\n";
+    cout << "  Вариант №23 – сортировка по опозданию\n";
+    cout << "========================================\n";
+    int idx = selectTestFile();
+    const char* filename = TEST_FILES[idx];
+
+    FlightRecord* records = nullptr;
+    int* indices = nullptr;
+    int count = 0;
+    int err = LoadFlightData(filename, records, indices, count);
+    if (err != 0) {
+        PrintError(err, filename, -1);
+        return 1;
+    }
+    SortByDelayDesc(records, indices, count);
+    DisplayTable(records, indices, count);
+
+    delete[] records;
+    delete[] indices;
+    return 0;
+}
+
+// ------------------------------------------------------------------
+//  Реализации функций
+// ------------------------------------------------------------------
+
+// считаем длину строки
+int my_strlen(const char* s) {
+    int len = 0;
+    while (s[len]) ++len;
+    return len;
+}
+
+// копируем строку (как strcpy)
+void my_strcpy(char* dest, const char* src) {
+    while ((*dest++ = *src++));
+}
+
+// сравниваем две строки: 0 если равны
+int my_strcmp(const char* a, const char* b) {
+    while (*a && *b && *a == *b) { ++a; ++b; }
+    return *(unsigned char*)a - *(unsigned char*)b;
+}
 
 // ------------------------------------------------------------------
 //  Вывод ошибок в поток cerr (чтобы не мешал таблице)
@@ -337,30 +371,4 @@ int selectTestFile() {
         cin >> choice;
     }
     return choice - 1;
-}
-
-// ------------------------------------------------------------------
-//  Главная функция.
-// ------------------------------------------------------------------
-int main() {
-    cout << "========================================\n";
-    cout << "  Вариант №23 – сортировка по опозданию\n";
-    cout << "========================================\n";
-    int idx = selectTestFile();
-    const char* filename = TEST_FILES[idx];
-
-    FlightRecord* records = nullptr;
-    int* indices = nullptr;
-    int count = 0;
-    int err = LoadFlightData(filename, records, indices, count);
-    if (err != 0) {
-        PrintError(err, filename, -1);
-        return 1;
-    }
-    SortByDelayDesc(records, indices, count);
-    DisplayTable(records, indices, count);
-
-    delete[] records;
-    delete[] indices;
-    return 0;
 }
