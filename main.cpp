@@ -329,7 +329,9 @@ void SortByDelayDesc(FlightRecord* records, int* indices, int n) {
                      records[indices[j+1]].delayHours * 60 +
                      records[indices[j+1]].delayMinutes;
             if (t1 < t2) {            // по убыванию
-                swap(indices[j], indices[j+1]);
+                int temp=indices[j];
+                indices[j]=indices[j+1];
+                indices[j+1]=temp;
                 swapped = true;
             }
         }
